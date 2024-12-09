@@ -1,0 +1,77 @@
+1. Formulaire HTML pour uploader le fichier
+<form action="upload.php" method="post" enctype="multipart/form-data">
+    <label for="file">Choisissez le logo :</label>
+    <input type="file" name="file" id="file" accept="image/*">
+    <button type="submit">Uploader</button>
+</form>
+<form> :
+
+    action="upload.php" : Le fichier PHP qui va traiter le fichier uploadé (upload.php).
+    method="post" : Permet d'envoyer des données via une requête POST.
+    enctype="multipart/form-data" : Obligatoire pour envoyer des fichiers.
+
+<input type="file"> :
+
+    Permet à l'utilisateur de sélectionner un fichier depuis son appareil.
+    name="file" : Le nom du champ, utilisé pour accéder au fichier dans le code PHP.
+    accept="image/*" : Limite la sélection aux fichiers d'image uniquement (jpg, png, etc.).
+
+<button type="submit"> :
+
+    Envoie les données du formulaire au script PHP (upload.php).
+
+
+
+
+
+
+
+
+ Script PHP pour gérer l'upload
+<?php
+$target_dir = "uploads/"; // Dossier cible
+$target_file = $target_dir . basename($_FILES["file"]["name"]);
+
+$target_dir :
+
+    Indique où le fichier sera sauvegardé (exemple : dossier uploads).
+
+$_FILES["file"] :
+
+    Contient des informations sur le fichier uploadé :
+        $_FILES["file"]["name"] : Nom original du fichier.
+        $_FILES["file"]["tmp_name"] : Chemin temporaire du fichier.
+        $_FILES["file"]["size"] : Taille du fichier.
+        $_FILES["file"]["error"] : Code d’erreur (0 = aucun problème).
+
+basename() :
+
+    Extrait le nom de base d’un fichier (exclut les dossiers du chemin)
+
+
+
+Vérifier que c’est une image :
+
+$check = getimagesize($_FILES["file"]["tmp_name"]);
+if ($check === false) {
+    die("Le fichier n'est pas une image.");
+}
+getimagesize() : Retourne les dimensions et le type de l'image si c'est valide.
+die("message") : Arrête l'exécution du script avec un message d'erreur.
+
+
+3. Afficher l’image uploadée sur le site
+Code :
+
+$uploaded_logo = "uploads/" . htmlspecialchars(basename($_FILES["file"]["name"]));
+?>
+<img src="<?php echo $uploaded_logo; ?>" alt="Logo">
+
+Explications :
+
+    Créer le chemin du fichier uploadé :
+        htmlspecialchars(basename($_FILES["file"]["name"])) : S’assure que le nom est sûr à utiliser.
+
+    Afficher l’image :
+        <img> : Balise HTML pour afficher une image.
+        src="<?php echo $uploaded_logo; ?>" : Charge l'image depuis le chemin généré.
