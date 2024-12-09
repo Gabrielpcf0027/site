@@ -14,7 +14,7 @@
 
     Permet à l'utilisateur de sélectionner un fichier depuis son appareil.
     name="file" : Le nom du champ, utilisé pour accéder au fichier dans le code PHP.
-    accept="image/*" : Limite la sélection aux fichiers d'image uniquement (jpg, png, etc.).
+    accept="image/*" : Limite la sélection aux fichiers d'image uniquement (jpg, png, etc.) eviter de mettre n'importe quoi (voir futur si possible de mettre gif).
 
 <button type="submit"> :
 
@@ -27,14 +27,14 @@
 
 
 
- Script PHP pour gérer l'upload
+ Script PHP pour gérer l'upload sur le site sans probleme 
 <?php
 $target_dir = "uploads/"; // Dossier cible
 $target_file = $target_dir . basename($_FILES["file"]["name"]);
 
 $target_dir :
 
-    Indique où le fichier sera sauvegardé (exemple : dossier uploads).
+    Indique où le fichier sera sauvegardé dans le pc exporteur (exemple : dossier uploads).
 
 $_FILES["file"] :
 
@@ -42,15 +42,15 @@ $_FILES["file"] :
         $_FILES["file"]["name"] : Nom original du fichier.
         $_FILES["file"]["tmp_name"] : Chemin temporaire du fichier.
         $_FILES["file"]["size"] : Taille du fichier.
-        $_FILES["file"]["error"] : Code d’erreur (0 = aucun problème).
+        $_FILES["file"]["error"] : Code d’erreur (0 = aucun problème on espere).
 
 basename() :
 
-    Extrait le nom de base d’un fichier (exclut les dossiers du chemin)
+    Extrait le nom de base d’un fichier (exclut les dossiers du chemin prends en compte l'image avec l'extansion)
 
 
 
-Vérifier que c’est une image :
+Vérifier que c’est une image :(verifications de l'origine et la nature du doc pour eviter tout probleme d'attaque )
 
 $check = getimagesize($_FILES["file"]["tmp_name"]);
 if ($check === false) {
@@ -60,18 +60,26 @@ getimagesize() : Retourne les dimensions et le type de l'image si c'est valide.
 die("message") : Arrête l'exécution du script avec un message d'erreur.
 
 
-3. Afficher l’image uploadée sur le site
+3. Afficher l’image uploadée sur le site (pour le logo de l'equipe sur le site) 
+
 Code :
 
 $uploaded_logo = "uploads/" . htmlspecialchars(basename($_FILES["file"]["name"]));
 ?>
 <img src="<?php echo $uploaded_logo; ?>" alt="Logo">
 
-Explications :
+Explications des lignes de codes 
 
-    Créer le chemin du fichier uploadé :
-        htmlspecialchars(basename($_FILES["file"]["name"])) : S’assure que le nom est sûr à utiliser.
+    Créer le chemin du fichier uploadé a partir de l'orignine d'ou est l'image :
+        htmlspecialchars(basename($_FILES["file"]["name"])) : S’assure que le nom est sûr à utiliser pas d'attaque SQL possible.
 
-    Afficher l’image :
+    Afficher l’image en haut a droite hypotèse on verra ou on veut  pour le site :
         <img> : Balise HTML pour afficher une image.
         src="<?php echo $uploaded_logo; ?>" : Charge l'image depuis le chemin généré.
+
+
+
+pour eviter injection SQL 
+eviter d'utiliser GET 
+attention au cookie
+telechargement de fichier bizarre
